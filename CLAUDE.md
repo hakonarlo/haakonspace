@@ -25,4 +25,12 @@ A personal daily dashboard webpage with a dark, modern design. Contains:
 - **To-Do List** — add tasks by typing and pressing Enter or clicking +, check off completed items, remove with ✕
 - **Motivational Quote** — randomly selected from a built-in list of 8 quotes, with a "New quote" button to cycle through them
 
-All functionality is in a single self-contained HTML file — no installs or build tools needed.
+The dashboard is served via a local Python server (server.py) launched by double-clicking launch.command. This is required because Safari blocks external API calls from local files — serving from http://localhost fixes that.
+
+### How to run
+Double-click launch.command. It starts server.py on port 8080 and opens the dashboard in the browser. Press Ctrl+C in the Terminal to stop.
+
+### Files
+- dashboard.html — the full dashboard UI
+- server.py — tiny Python server: serves static files + fetches NRK RSS server-side at /api/news
+- launch.command — double-clickable macOS launcher
