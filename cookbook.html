@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Cookbook</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: #EFE0B8;
+      color: #3B2508;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      padding: 48px 24px 80px;
+    }
+
+    /* ── Header ── */
+    .page-header {
+      max-width: 860px;
+      margin: 0 auto 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .page-title {
+      font-size: 1rem;
+      font-weight: 400;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #9A6E3A;
+    }
+
+    .btn-primary {
+      background: #C4622D;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 20px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-family: inherit;
+    }
+    .btn-primary:hover { background: #A34E22; }
+
+    /* ── Search + Filters ── */
+    .controls {
+      max-width: 860px;
+      margin: 0 auto 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .search-wrap {
+      position: relative;
+    }
+
+    .search-wrap input {
+      width: 100%;
+      background: #FBF4E2;
+      border: 1px solid #C9A06A;
+      border-radius: 12px;
+      padding: 12px 44px 12px 16px;
+      color: #3B2508;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+      font-family: inherit;
+    }
+    .search-wrap input::placeholder { color: #C0956A; }
+    .search-wrap input:focus { border-color: #C4622D; }
+
+    .search-icon {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #C0956A;
+      font-size: 1rem;
+      pointer-events: none;
+    }
+
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-tab {
+      background: #FBF4E2;
+      border: 1px solid #C9A06A;
+      border-radius: 20px;
+      padding: 6px 16px;
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #8A6040;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .filter-tab:hover { border-color: #C4622D; color: #C4622D; }
+    .filter-tab.active {
+      background: #C4622D;
+      border-color: #C4622D;
+      color: #fff;
+    }
+
+    /* ── Recipe Grid ── */
+    .recipe-grid {
+      max-width: 860px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .recipe-card {
+      background: #FBF4E2;
+      border: 1px solid #C9A06A;
+      border-radius: 16px;
+      padding: 24px;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.15s;
+    }
+    .recipe-card:hover {
+      border-color: #C4622D;
+      transform: translateY(-2px);
+    }
+
+    .recipe-card .cat-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #C4622D;
+      background: #F5E6CC;
+      border: 1px solid #C9A06A;
+      border-radius: 20px;
+      padding: 3px 10px;
+      margin-bottom: 12px;
+    }
+
+    .recipe-card .recipe-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #3B2508;
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+
+    .recipe-card .recipe-meta {
+      font-size: 0.8rem;
+      color: #9A6E3A;
+    }
+
+    .empty-state {
+      max-width: 860px;
+      margin: 0 auto;
+      text-align: center;
+      padding: 60px 0;
+      color: #C0956A;
+    }
+    .empty-state .empty-icon { font-size: 3rem; margin-bottom: 16px; }
+    .empty-state p { font-size: 0.95rem; line-height: 1.6; }
+
+    /* ── Modal overlay ── */
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(59, 37, 8, 0.45);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .overlay.open { display: flex; }
+
+    .modal {
+      background: #FBF4E2;
+      border: 1px solid #C9A06A;
+      border-radius: 20px;
+      padding: 36px 32px;
+      width: 100%;
+      max-width: 560px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .modal-title {
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #9A6E3A;
+      margin-bottom: 24px;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 20px;
+      right: 24px;
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      color: #C0956A;
+      cursor: pointer;
+      line-height: 1;
+      padding: 4px;
+      transition: color 0.2s;
+    }
+    .close-btn:hover { color: #C4622D; }
+
+    /* ── Form ── */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #9A6E3A;
+      margin-bottom: 8px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      background: #EFE0B8;
+      border: 1px solid #C9A06A;
+      border-radius: 10px;
+      padding: 10px 14px;
+      color: #3B2508;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+      font-family: inherit;
+      resize: vertical;
+    }
+    .form-group input::placeholder,
+    .form-group textarea::placeholder { color: #C0956A; }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus { border-color: #C4622D; }
+
+    .form-group textarea { min-height: 100px; }
+
+    .form-hint {
+      font-size: 0.75rem;
+      color: #9A6E3A;
+      margin-top: 5px;
+    }
+
+    .field-error {
+      font-size: 0.75rem;
+      color: #C0392B;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .input-invalid {
+      border-color: #C0392B !important;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+
+    .btn-secondary {
+      background: none;
+      border: 1px solid #C9A06A;
+      border-radius: 10px;
+      padding: 10px 18px;
+      font-size: 0.9rem;
+      color: #8A6040;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .btn-secondary:hover { border-color: #C4622D; color: #C4622D; }
+
+    /* ── Recipe Detail View ── */
+    .detail-cat {
+      display: inline-block;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #C4622D;
+      background: #F5E6CC;
+      border: 1px solid #C9A06A;
+      border-radius: 20px;
+      padding: 3px 10px;
+      margin-bottom: 16px;
+    }
+
+    .detail-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #3B2508;
+      margin-bottom: 24px;
+      line-height: 1.3;
+    }
+
+    .detail-section-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #9A6E3A;
+      margin-bottom: 10px;
+    }
+
+    .detail-section {
+      background: #EFE0B8;
+      border: 1px solid #C9A06A;
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-bottom: 20px;
+    }
+
+    .ingredients-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .ingredients-list li {
+      display: flex;
+      gap: 10px;
+      font-size: 0.93rem;
+      color: #4A3010;
+      line-height: 1.4;
+    }
+
+    .ingredients-list li::before {
+      content: '•';
+      color: #C4622D;
+      flex-shrink: 0;
+      font-size: 1rem;
+    }
+
+    .steps-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .steps-list li {
+      display: flex;
+      gap: 12px;
+      font-size: 0.93rem;
+      color: #4A3010;
+      line-height: 1.5;
+    }
+
+    .step-num {
+      background: #C4622D;
+      color: #fff;
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 600;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .detail-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+      padding-top: 16px;
+      border-top: 1px solid #C9A06A;
+    }
+
+    .btn-danger {
+      background: none;
+      border: 1px solid #C9A06A;
+      border-radius: 10px;
+      padding: 8px 14px;
+      font-size: 0.82rem;
+      color: #C0956A;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .btn-danger:hover { border-color: #C0392B; color: #C0392B; }
+
+    /* ── Recipe of the Day ── */
+    .rotd-wrap {
+      max-width: 860px;
+      margin: 0 auto 32px;
+    }
+
+    .rotd-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: #9A6E3A;
+      margin-bottom: 10px;
+    }
+
+    .rotd-card {
+      background: #FBF4E2;
+      border: 1px solid #C9A06A;
+      border-left: 4px solid #C4622D;
+      border-radius: 16px;
+      padding: 24px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .rotd-body { width: 100%; }
+
+    .rotd-badges {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .rotd-badge {
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-radius: 20px;
+      padding: 3px 10px;
+    }
+
+    .rotd-badge-cat {
+      color: #C4622D;
+      background: #F5E6CC;
+      border: 1px solid #C9A06A;
+    }
+
+    .rotd-badge-protein {
+      color: #5A7A3A;
+      background: #EAF0DC;
+      border: 1px solid #AABF88;
+    }
+
+    .rotd-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #3B2508;
+      line-height: 1.3;
+      margin-bottom: 6px;
+    }
+
+    .rotd-desc {
+      font-size: 0.85rem;
+      color: #8A6040;
+      line-height: 1.5;
+    }
+
+    .rotd-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .rotd-btn {
+      background: none;
+      border: 1px solid #C4622D;
+      border-radius: 10px;
+      padding: 10px 18px;
+      font-size: 0.85rem;
+      color: #C4622D;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .rotd-btn:hover { background: #C4622D; color: #fff; }
+
+    .rotd-btn-add {
+      background: #C4622D;
+      border: 1px solid #C4622D;
+      border-radius: 10px;
+      padding: 10px 18px;
+      font-size: 0.85rem;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .rotd-btn-add:hover { background: #A34E22; border-color: #A34E22; }
+    .rotd-btn-add.added {
+      background: #EAF0DC;
+      border-color: #AABF88;
+      color: #5A7A3A;
+      cursor: default;
+    }
+    .rotd-btn-add.added:hover { background: #EAF0DC; border-color: #AABF88; }
+
+    .rotd-btn-like {
+      background: none;
+      border: 1px solid #C9A06A;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 1.1rem;
+      color: #C0956A;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+      line-height: 1;
+    }
+    .rotd-btn-like:hover { border-color: #C4622D; color: #C4622D; }
+    .rotd-btn-like.liked { border-color: #C4622D; color: #C4622D; }
+
+    .rotd-remove-link {
+      background: none;
+      border: none;
+      font-size: 0.78rem;
+      color: #C0956A;
+      cursor: pointer;
+      text-decoration: underline;
+      font-family: inherit;
+      padding: 0;
+      transition: color 0.2s;
+    }
+    .rotd-remove-link:hover { color: #C0392B; }
+
+    .rotd-status {
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      color: #B09060;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid #E0C898;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="page-title">My Cookbook</div>
+    <button class="btn-primary" onclick="openAddModal()">+ Add Recipe</button>
+  </div>
+
+  <!-- Recipe of the Day -->
+  <div class="rotd-wrap">
+    <div class="rotd-label">Recipe of the Day</div>
+    <div class="rotd-card" id="rotd-card"></div>
+  </div>
+
+  <!-- Search & Filters -->
+  <div class="controls">
+    <div class="search-wrap">
+      <input type="text" id="search-input" placeholder="Search recipes…" oninput="renderRecipes()" />
+      <span class="search-icon">🔍</span>
+    </div>
+    <div class="filter-tabs" id="filter-tabs">
+      <button class="filter-tab active" data-cat="all" onclick="setFilter('all')">All</button>
+      <button class="filter-tab" data-cat="breakfast" onclick="setFilter('breakfast')">Breakfast</button>
+      <button class="filter-tab" data-cat="lunch" onclick="setFilter('lunch')">Lunch</button>
+      <button class="filter-tab" data-cat="dinner" onclick="setFilter('dinner')">Dinner</button>
+      <button class="filter-tab" data-cat="snacks" onclick="setFilter('snacks')">Snacks</button>
+    </div>
+  </div>
+
+  <!-- Recipe Grid -->
+  <div class="recipe-grid" id="recipe-grid"></div>
+
+  <!-- Add Recipe Modal -->
+  <div class="overlay" id="add-overlay">
+    <div class="modal">
+      <div class="modal-title">New Recipe</div>
+      <button class="close-btn" onclick="closeAddModal()">✕</button>
+
+      <div class="form-group">
+        <label for="f-title">Title</label>
+        <input type="text" id="f-title" placeholder="e.g. Mushroom Omelette" />
+        <div class="field-error" id="err-title">Please enter a title.</div>
+      </div>
+
+      <div class="form-group">
+        <label for="f-category">Category</label>
+        <select id="f-category">
+          <option value="breakfast">Breakfast</option>
+          <option value="lunch">Lunch</option>
+          <option value="dinner">Dinner</option>
+          <option value="snacks">Snacks</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="f-ingredients">Ingredients</label>
+        <textarea id="f-ingredients" placeholder="2 eggs&#10;1 cup mushrooms&#10;Salt and pepper"></textarea>
+        <div class="form-hint">One ingredient per line</div>
+        <div class="field-error" id="err-ingredients">Please add at least one ingredient.</div>
+      </div>
+
+      <div class="form-group">
+        <label for="f-steps">Steps</label>
+        <textarea id="f-steps" placeholder="Heat the pan over medium heat.&#10;Add butter and let it melt.&#10;Pour in the eggs…"></textarea>
+        <div class="form-hint">One step per line</div>
+        <div class="field-error" id="err-steps">Please add at least one step.</div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-secondary" onclick="closeAddModal()">Cancel</button>
+        <button class="btn-primary" onclick="saveRecipe()">Save Recipe</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail Modal -->
+  <div class="overlay" id="detail-overlay">
+    <div class="modal" id="detail-content"></div>
+  </div>
+
+  <script>
+    // ── Recipe of the Day data ────────────────────────────
+    const DAILY_RECIPES = [
+      {
+        title: 'Greek Yogurt Parfait',
+        category: 'breakfast',
+        desc: 'Creamy yogurt layered with berries and crunchy granola.',
+        ingredients: '200g plain Greek yogurt\n1 handful mixed berries\n3 tbsp granola\n1 tsp honey',
+        steps: 'Spoon yogurt into a bowl or glass.\nAdd half the berries and half the granola.\nRepeat the layers.\nDrizzle with honey and serve immediately.'
+      },
+      {
+        title: 'Scrambled Eggs with Spinach',
+        category: 'breakfast',
+        desc: 'Fluffy eggs packed with iron-rich spinach — ready in 10 minutes.',
+        ingredients: '3 eggs\n1 large handful baby spinach\n1 tsp olive oil\nSalt and black pepper\nOptional: feta crumbles',
+        steps: 'Whisk eggs with a pinch of salt and pepper.\nHeat olive oil in a pan over medium heat.\nAdd spinach and stir until just wilted, about 1 minute.\nPour in eggs and gently fold until just set.\nTop with feta if using and serve.'
+      },
+      {
+        title: 'Protein Smoothie Bowl',
+        category: 'breakfast',
+        desc: 'Thick blended smoothie topped with seeds and fruit for a filling start.',
+        ingredients: '1 frozen banana\n150g frozen mango chunks\n1 scoop vanilla protein powder\n100ml oat milk\nToppings: chia seeds, sliced kiwi, pumpkin seeds',
+        steps: 'Blend banana, mango, protein powder and oat milk until thick and smooth.\nPour into a bowl — it should be thicker than a drinkable smoothie.\nArrange toppings on top and serve straight away.'
+      },
+      {
+        title: 'Overnight Oats with Chia',
+        category: 'breakfast',
+        desc: 'Prep the night before for a no-fuss high-protein morning.',
+        ingredients: '80g rolled oats\n1 tbsp chia seeds\n250ml oat milk\n1 tbsp almond butter\n1 tsp honey\nFresh fruit to serve',
+        steps: 'Mix oats, chia seeds, oat milk, almond butter and honey in a jar.\nStir well, seal the jar and refrigerate overnight.\nIn the morning, give it a stir and add a splash more milk if too thick.\nTop with fresh fruit and enjoy cold.'
+      },
+      {
+        title: 'Grilled Chicken Salad',
+        category: 'lunch',
+        desc: 'Lean grilled chicken over crisp greens with a lemon dressing.',
+        ingredients: '1 chicken breast\n2 handfuls mixed salad leaves\n1 handful cherry tomatoes, halved\n¼ cucumber, sliced\n1 tbsp olive oil\nJuice of ½ lemon\nSalt and pepper',
+        steps: 'Season chicken with salt, pepper and a little olive oil.\nGrill or pan-fry over medium-high heat for 6–7 minutes per side until cooked through.\nRest for 3 minutes, then slice.\nToss leaves, tomatoes and cucumber with lemon juice and olive oil.\nTop with sliced chicken and serve.'
+      },
+      {
+        title: 'Tuna & Avocado Bowl',
+        category: 'lunch',
+        desc: 'Omega-3 rich tuna paired with creamy avocado over brown rice.',
+        ingredients: '1 can tuna in spring water, drained\n½ ripe avocado, sliced\n150g cooked brown rice\n1 tbsp soy sauce\n1 tsp sesame oil\n½ tsp chilli flakes\nSesame seeds to garnish',
+        steps: 'Warm the cooked rice in the microwave or a pan.\nMix tuna with soy sauce and sesame oil.\nSpoon rice into a bowl, add tuna and avocado slices.\nSprinkle with chilli flakes and sesame seeds.'
+      },
+      {
+        title: 'Lentil & Vegetable Soup',
+        category: 'lunch',
+        desc: 'Hearty plant-based soup loaded with protein and fibre.',
+        ingredients: '200g red lentils, rinsed\n1 carrot, diced\n1 celery stalk, diced\n1 onion, diced\n2 garlic cloves, minced\n1 tsp cumin\n1 tsp turmeric\n800ml vegetable stock\nSalt and pepper',
+        steps: 'Sauté onion, carrot and celery in a little oil for 5 minutes until soft.\nAdd garlic, cumin and turmeric and cook for 1 minute.\nAdd lentils and stock. Bring to a boil.\nReduce heat and simmer for 20 minutes until lentils are soft.\nSeason and blend half the soup for a thicker texture if you like.'
+      },
+      {
+        title: 'Salmon with Roasted Vegetables',
+        category: 'dinner',
+        desc: 'Baked salmon fillet with colourful roasted veg — simple and nutritious.',
+        ingredients: '1 salmon fillet\n1 courgette, sliced\n1 red pepper, chopped\n200g cherry tomatoes\n2 tbsp olive oil\n1 tsp dried oregano\nSalt and pepper\nLemon wedge to serve',
+        steps: 'Preheat oven to 200°C.\nToss vegetables with olive oil, oregano, salt and pepper on a baking tray.\nRoast for 15 minutes.\nPush veg to the sides, place salmon in the centre and season.\nReturn to oven and bake a further 12–15 minutes until salmon flakes easily.\nServe with a lemon wedge.'
+      },
+      {
+        title: 'Turkey Meatballs & Courgette Noodles',
+        category: 'dinner',
+        desc: 'Lean turkey meatballs with a light tomato sauce over courgette noodles.',
+        ingredients: '400g turkey mince\n1 egg\n2 tbsp breadcrumbs\n1 garlic clove, minced\n400g can crushed tomatoes\n2 courgettes, spiralised or peeled into ribbons\nOlive oil, salt, pepper, dried basil',
+        steps: 'Mix turkey, egg, breadcrumbs, garlic, salt and pepper. Shape into small balls.\nBrown meatballs in olive oil for 4–5 minutes, turning to colour all sides.\nAdd crushed tomatoes and basil. Simmer 15 minutes.\nSauté courgette noodles in a separate pan for 2 minutes.\nServe meatballs and sauce over courgette noodles.'
+      },
+      {
+        title: 'Baked Cod with Sweet Potato',
+        category: 'dinner',
+        desc: 'Mild white fish baked with paprika sweet potato wedges.',
+        ingredients: '1 cod fillet\n1 medium sweet potato, cut into wedges\n1 tsp smoked paprika\n2 tbsp olive oil\n1 garlic clove, minced\nSalt, pepper, fresh parsley',
+        steps: 'Preheat oven to 200°C.\nToss sweet potato wedges with 1 tbsp olive oil, paprika, salt and pepper.\nRoast for 25 minutes, turning once.\nRub cod with remaining olive oil, garlic, salt and pepper.\nAdd cod to the tray and bake a further 12 minutes until fish is opaque.\nScatter parsley and serve.'
+      },
+      {
+        title: 'Chicken & Broccoli Stir-Fry',
+        category: 'dinner',
+        desc: 'Quick high-protein stir-fry with ginger and soy — done in 15 minutes.',
+        ingredients: '1 chicken breast, thinly sliced\n200g broccoli florets\n2 tbsp soy sauce\n1 tsp sesame oil\n1 tsp fresh ginger, grated\n1 garlic clove, minced\n1 tsp cornflour\nCooked rice to serve',
+        steps: 'Mix soy sauce, sesame oil, ginger, garlic and cornflour in a small bowl.\nStir-fry chicken in a hot pan with a little oil for 4 minutes until golden.\nAdd broccoli and stir-fry 3 more minutes.\nPour sauce over and toss everything together for 1 minute.\nServe over rice.'
+      },
+      {
+        title: 'Cottage Cheese with Berries',
+        category: 'snacks',
+        desc: 'High-protein cottage cheese with sweet berries — no cooking needed.',
+        ingredients: '200g cottage cheese\n1 handful strawberries or blueberries\n1 tsp honey\nOptional: crushed walnuts',
+        steps: 'Spoon cottage cheese into a bowl.\nTop with berries and a drizzle of honey.\nAdd crushed walnuts if using. Eat straight away.'
+      },
+      {
+        title: 'Hard-Boiled Eggs & Hummus',
+        category: 'snacks',
+        desc: 'Protein-packed snack that keeps you full between meals.',
+        ingredients: '2 eggs\n3 tbsp hummus\nPaprika to sprinkle\nVegetable sticks: carrot, celery, cucumber',
+        steps: 'Place eggs in cold water, bring to a boil and cook for 9 minutes.\nTransfer to cold water for 5 minutes, then peel and halve.\nArrange eggs and veg sticks on a plate with hummus.\nSprinkle eggs with paprika and serve.'
+      },
+      {
+        title: 'Edamame with Sea Salt & Chilli',
+        category: 'snacks',
+        desc: 'Steamed edamame — one of the best plant-based protein snacks around.',
+        ingredients: '200g frozen edamame in pods\nFlaky sea salt\n½ tsp chilli flakes\n1 tsp sesame oil',
+        steps: 'Cook edamame according to packet — usually 4–5 minutes in boiling water.\nDrain and pat dry.\nToss with sesame oil, sea salt and chilli flakes.\nServe warm and eat by popping pods into your mouth.'
+      },
+    ];
+
+    function loadRotdState() {
+      try {
+        const state = JSON.parse(localStorage.getItem('cookbook_rotd_state')) || { liked: [], added: [] };
+        if (!state.firstUsed) {
+          state.firstUsed = new Date().toISOString().split('T')[0];
+          localStorage.setItem('cookbook_rotd_state', JSON.stringify(state));
+        }
+        return state;
+      } catch { return { liked: [], added: [], firstUsed: new Date().toISOString().split('T')[0] }; }
+    }
+    function saveRotdState(state) {
+      localStorage.setItem('cookbook_rotd_state', JSON.stringify(state));
+    }
+
+    function getRotdRecipeIndex(state) {
+      const today = new Date();
+      const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 86400000);
+      const daysSinceStart = Math.floor((today - new Date(state.firstUsed)) / 86400000);
+      const likedTitles = state.liked || [];
+
+      // Learning period: first 30 days or fewer than 3 likes
+      if (daysSinceStart < 30 || likedTitles.length < 3) {
+        return dayOfYear % DAILY_RECIPES.length;
+      }
+
+      // Personalized: score each recipe by similarity to liked ones
+      const likedRecipes = DAILY_RECIPES.filter(r => likedTitles.includes(r.title));
+      const scored = DAILY_RECIPES.map((r, i) => {
+        let score = 0;
+        for (const liked of likedRecipes) {
+          if (r.category === liked.category) score += 3;
+          const rWords = r.ingredients.toLowerCase().match(/\b\w{5,}\b/g) || [];
+          const lWords = liked.ingredients.toLowerCase().match(/\b\w{5,}\b/g) || [];
+          score += rWords.filter(w => lWords.includes(w)).length;
+        }
+        return { i, score };
+      }).sort((a, b) => b.score - a.score || a.i - b.i);
+
+      return scored[dayOfYear % scored.length].i;
+    }
+
+    function renderRotd() {
+      const state = loadRotdState();
+      const today = new Date();
+      const daysSinceStart = Math.floor((today - new Date(state.firstUsed)) / 86400000);
+      const likedCount = (state.liked || []).length;
+      const isPersonalized = daysSinceStart >= 30 && likedCount >= 3;
+
+      const idx = getRotdRecipeIndex(state);
+      const r = DAILY_RECIPES[idx];
+      const isLiked = state.liked.includes(r.title);
+      const isAdded = state.added.includes(r.title);
+
+      const addHtml = isAdded
+        ? `<button class="rotd-btn-add added" disabled>✓ Added</button>
+           <button class="rotd-remove-link" onclick="removeRotdFromCookbook(${idx})">Remove</button>`
+        : `<button class="rotd-btn-add" id="rotd-add-btn" onclick="addRotdToCookbook(${idx})">+ Add to my cookbook</button>`;
+
+      let statusHtml = '';
+      if (isPersonalized) {
+        statusHtml = `<div class="rotd-status">✦ Personalised based on your likes</div>`;
+      } else {
+        const daysLeft = Math.max(0, 30 - daysSinceStart);
+        const likesLeft = Math.max(0, 3 - likedCount);
+        if (daysLeft > 0) {
+          statusHtml = `<div class="rotd-status">Learning your taste — like recipes you enjoy. Personalisation begins in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}.</div>`;
+        } else if (likesLeft > 0) {
+          statusHtml = `<div class="rotd-status">Almost there — like ${likesLeft} more recipe${likesLeft !== 1 ? 's' : ''} to unlock personalisation.</div>`;
+        }
+      }
+
+      document.getElementById('rotd-card').innerHTML = `
+        <div class="rotd-body">
+          <div class="rotd-badges">
+            <span class="rotd-badge rotd-badge-cat">${r.category}</span>
+            <span class="rotd-badge rotd-badge-protein">High protein</span>
+          </div>
+          <div class="rotd-title">${escHtml(r.title)}</div>
+          <div class="rotd-desc">${escHtml(r.desc)}</div>
+        </div>
+        <div class="rotd-actions">
+          <button class="rotd-btn-like ${isLiked ? 'liked' : ''}" id="rotd-like-btn" onclick="toggleRotdLike(${idx})" title="${isLiked ? 'Unlike' : 'Like this recipe'}">
+            ${isLiked ? '♥' : '♡'}
+          </button>
+          ${addHtml}
+          <button class="rotd-btn" onclick="openRotdDetail(${idx})">View recipe →</button>
+        </div>
+        ${statusHtml}`;
+    }
+
+    function addRotdToCookbook(idx) {
+      const r = DAILY_RECIPES[idx];
+
+      if (!recipes.some(x => x.title === r.title)) {
+        recipes.unshift({
+          id: Date.now().toString(),
+          title: r.title,
+          category: r.category,
+          ingredients: r.ingredients,
+          steps: r.steps,
+          createdAt: new Date().toISOString()
+        });
+        saveRecipes(recipes);
+      }
+
+      const state = loadRotdState();
+      if (!state.added.includes(r.title)) state.added.push(r.title);
+      saveRotdState(state);
+
+      renderRotd();
+      renderRecipes();
+    }
+
+    function removeRotdFromCookbook(idx) {
+      const r = DAILY_RECIPES[idx];
+      recipes = recipes.filter(x => x.title !== r.title);
+      saveRecipes(recipes);
+
+      const state = loadRotdState();
+      state.added = state.added.filter(t => t !== r.title);
+      saveRotdState(state);
+
+      renderRotd();
+      renderRecipes();
+    }
+
+    function toggleRotdLike(idx) {
+      const r = DAILY_RECIPES[idx];
+      const state = loadRotdState();
+      const i = state.liked.indexOf(r.title);
+      if (i === -1) { state.liked.push(r.title); }
+      else { state.liked.splice(i, 1); }
+      saveRotdState(state);
+
+      renderRotd();
+    }
+
+    function openRotdDetail(idx) {
+      const r = DAILY_RECIPES[idx];
+
+      const ingredientItems = r.ingredients.split('\n').filter(Boolean)
+        .map(i => `<li><span>${escHtml(i)}</span></li>`).join('');
+
+      const stepItems = r.steps.split('\n').filter(Boolean)
+        .map((s, i) => `<li><div class="step-num">${i + 1}</div><span>${escHtml(s)}</span></li>`).join('');
+
+      document.getElementById('detail-content').innerHTML = `
+        <button class="close-btn" onclick="closeDetail()">✕</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+          <span class="detail-cat">${r.category}</span>
+          <span class="detail-cat" style="color:#5A7A3A;background:#EAF0DC;border-color:#AABF88">High protein</span>
+        </div>
+        <div class="detail-title">${escHtml(r.title)}</div>
+
+        <div class="detail-section-label">Ingredients</div>
+        <div class="detail-section">
+          <ul class="ingredients-list">${ingredientItems}</ul>
+        </div>
+
+        <div class="detail-section-label">Steps</div>
+        <div class="detail-section">
+          <ol class="steps-list">${stepItems}</ol>
+        </div>
+
+        <div class="detail-footer">
+          <span style="font-size:0.8rem;color:#9A6E3A">Recipe of the Day</span>
+          <button class="btn-secondary" onclick="closeDetail()">Close</button>
+        </div>`;
+
+      document.getElementById('detail-overlay').classList.add('open');
+    }
+
+    // ── Storage ───────────────────────────────────────────
+    function loadRecipes() {
+      try { return JSON.parse(localStorage.getItem('cookbook_recipes')) || []; }
+      catch { return []; }
+    }
+
+    function saveRecipes(recipes) {
+      localStorage.setItem('cookbook_recipes', JSON.stringify(recipes));
+    }
+
+    // ── State ─────────────────────────────────────────────
+    let recipes = loadRecipes();
+    let activeFilter = 'all';
+
+    // ── Filters ───────────────────────────────────────────
+    function setFilter(cat) {
+      activeFilter = cat;
+      document.querySelectorAll('.filter-tab').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.cat === cat);
+      });
+      renderRecipes();
+    }
+
+    // ── Render Grid ───────────────────────────────────────
+    function renderRecipes() {
+      const query = document.getElementById('search-input').value.trim().toLowerCase();
+      const grid = document.getElementById('recipe-grid');
+
+      const filtered = recipes.filter(r => {
+        const matchCat = activeFilter === 'all' || r.category === activeFilter;
+        const matchSearch = !query ||
+          r.title.toLowerCase().includes(query) ||
+          r.ingredients.toLowerCase().includes(query);
+        return matchCat && matchSearch;
+      });
+
+      if (!filtered.length) {
+        const msg = recipes.length === 0
+          ? '<p>No recipes yet.<br>Click <strong>+ Add Recipe</strong> to get started!</p>'
+          : '<p>No recipes match your search.<br>Try different words or clear the filter.</p>';
+        grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+          <div class="empty-icon">🍳</div>${msg}</div>`;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(r => `
+        <div class="recipe-card" onclick="openDetail('${r.id}')">
+          <div class="cat-badge">${r.category}</div>
+          <div class="recipe-title">${escHtml(r.title)}</div>
+          <div class="recipe-meta">${r.ingredients.split('\n').filter(Boolean).length} ingredients · ${r.steps.split('\n').filter(Boolean).length} steps</div>
+        </div>`).join('');
+    }
+
+    // ── Add Recipe ────────────────────────────────────────
+    function openAddModal() {
+      document.getElementById('f-title').value = '';
+      document.getElementById('f-category').value = 'breakfast';
+      document.getElementById('f-ingredients').value = '';
+      document.getElementById('f-steps').value = '';
+      document.getElementById('add-overlay').classList.add('open');
+      document.getElementById('f-title').focus();
+    }
+
+    function closeAddModal() {
+      document.getElementById('add-overlay').classList.remove('open');
+      clearErrors();
+    }
+
+    function clearErrors() {
+      ['f-title','f-ingredients','f-steps'].forEach(id => {
+        document.getElementById(id).classList.remove('input-invalid');
+      });
+      ['err-title','err-ingredients','err-steps'].forEach(id => {
+        document.getElementById(id).style.display = 'none';
+      });
+    }
+
+    function saveRecipe() {
+      clearErrors();
+      const title = document.getElementById('f-title').value.trim();
+      const category = document.getElementById('f-category').value;
+      const ingredients = document.getElementById('f-ingredients').value.trim();
+      const steps = document.getElementById('f-steps').value.trim();
+
+      let valid = true;
+      if (!title) {
+        document.getElementById('f-title').classList.add('input-invalid');
+        document.getElementById('err-title').style.display = 'block';
+        valid = false;
+      }
+      if (!ingredients) {
+        document.getElementById('f-ingredients').classList.add('input-invalid');
+        document.getElementById('err-ingredients').style.display = 'block';
+        valid = false;
+      }
+      if (!steps) {
+        document.getElementById('f-steps').classList.add('input-invalid');
+        document.getElementById('err-steps').style.display = 'block';
+        valid = false;
+      }
+      if (!valid) return;
+
+      const recipe = {
+        id: Date.now().toString(),
+        title, category, ingredients, steps,
+        createdAt: new Date().toISOString()
+      };
+
+      recipes.unshift(recipe);
+      saveRecipes(recipes);
+      closeAddModal();
+      renderRecipes();
+    }
+
+    // ── Detail View ───────────────────────────────────────
+    function openDetail(id) {
+      const r = recipes.find(x => x.id === id);
+      if (!r) return;
+
+      const ingredientItems = r.ingredients.split('\n').filter(Boolean)
+        .map(i => `<li><span>${escHtml(i)}</span></li>`).join('');
+
+      const stepItems = r.steps.split('\n').filter(Boolean)
+        .map((s, i) => `<li><div class="step-num">${i + 1}</div><span>${escHtml(s)}</span></li>`).join('');
+
+      document.getElementById('detail-content').innerHTML = `
+        <button class="close-btn" onclick="closeDetail()">✕</button>
+        <div class="detail-cat">${r.category}</div>
+        <div class="detail-title">${escHtml(r.title)}</div>
+
+        <div class="detail-section-label">Ingredients</div>
+        <div class="detail-section">
+          <ul class="ingredients-list">${ingredientItems}</ul>
+        </div>
+
+        <div class="detail-section-label">Steps</div>
+        <div class="detail-section">
+          <ol class="steps-list">${stepItems}</ol>
+        </div>
+
+        <div class="detail-footer">
+          <button class="btn-danger" onclick="deleteRecipe('${r.id}')">Delete recipe</button>
+          <button class="btn-secondary" onclick="closeDetail()">Close</button>
+        </div>`;
+
+      document.getElementById('detail-overlay').classList.add('open');
+    }
+
+    function closeDetail() {
+      document.getElementById('detail-overlay').classList.remove('open');
+    }
+
+    function deleteRecipe(id) {
+      if (!confirm('Delete this recipe?')) return;
+      recipes = recipes.filter(r => r.id !== id);
+      saveRecipes(recipes);
+      closeDetail();
+      renderRecipes();
+    }
+
+    // ── Close on overlay click ────────────────────────────
+    document.getElementById('add-overlay').addEventListener('click', function(e) {
+      if (e.target === this) closeAddModal();
+    });
+    document.getElementById('detail-overlay').addEventListener('click', function(e) {
+      if (e.target === this) closeDetail();
+    });
+
+    // ── Keyboard: Escape closes modals ────────────────────
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { closeAddModal(); closeDetail(); }
+    });
+
+    // ── Utility ───────────────────────────────────────────
+    function escHtml(str) {
+      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // ── Init ──────────────────────────────────────────────
+    renderRotd();
+    renderRecipes();
+  </script>
+</body>
+</html>

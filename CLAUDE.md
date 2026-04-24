@@ -34,3 +34,21 @@ Double-click launch.command. It starts server.py on port 8080 and opens the dash
 - dashboard.html — the full dashboard UI
 - server.py — tiny Python server: serves static files + fetches NRK RSS server-side at /api/news
 - launch.command — double-clickable macOS launcher
+
+### cookbook.html
+A personal cookbook app in the same warm 60s/70s brown theme as the dashboard. Features:
+
+- **Add recipes** — title, category (Breakfast / Lunch / Dinner / Snacks), ingredients (one per line), steps (one per line)
+- **Search** — filters by title or ingredient instantly as you type
+- **Category filter tabs** — All, Breakfast, Lunch, Dinner, Snacks
+- **Recipe detail view** — opens in a modal with numbered steps and a bullet list of ingredients
+- **Delete** — remove a recipe from the detail view
+- **Recipe of the Day** — a built-in high-protein healthy recipe shown at the top, changes daily
+  - Heart ♡ button = taste signal (like recipes you enjoy to train personalisation)
+  - "Add to my cookbook" button — always visible, saves the recipe to your list instantly
+  - "Remove" link — undoes an accidental add
+  - **Learning period (first 30 days):** cycles through all 14 built-in recipes, shows countdown to personalisation
+  - **After 30 days + 3 likes:** scores all recipes by similarity to liked ones (matching category + ingredients) and picks the best match each day for variety
+  - Liked/added state and first-used date are stored in localStorage under `cookbook_rotd_state`
+
+Recipes are saved in `localStorage` — no server needed. Open cookbook.html directly in the browser.
