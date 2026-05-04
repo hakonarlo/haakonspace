@@ -528,19 +528,28 @@
     loadWeather();
 
     // ── News (NRK) ────────────────────────────────────────
+    // NRK's RSS sends Access-Control-Allow-Origin: * so browsers can fetch it directly.
     async function loadNews() {
       try {
-        const res = await fetch('/api/news');
-        if (!res.ok) throw new Error('Server error');
-        const items = await res.json();
+        const res = await fetch('https://www.nrk.no/nyheter/siste.rss');
+        if (!res.ok) throw new Error('Network error');
+        const xml = new DOMParser().parseFromString(await res.text(), 'text/xml');
+        const items = Array.from(xml.querySelectorAll('item')).slice(0, 3);
         if (!items.length) throw new Error('No items');
 
         const html = items.map(item => {
-          const date = item.pubDate ? new Date(item.pubDate).toLocaleString('en-GB', {
+          const title = item.querySelector('title')?.textContent?.trim() ?? '';
+          // <link> in RSS is a text node; some XML parsers surface it as a sibling
+          const linkEl = item.querySelector('link');
+          const link   = linkEl?.textContent?.trim()
+                      || linkEl?.nextSibling?.nodeValue?.trim()
+                      || '#';
+          const pub    = item.querySelector('pubDate')?.textContent ?? '';
+          const date   = pub ? new Date(pub).toLocaleString('en-GB', {
             day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
           }) : '';
-          return `<a class="news-item" href="${item.link}" target="_blank" rel="noopener">
-            <div class="news-title">${item.title}</div>
+          return `<a class="news-item" href="${link}" target="_blank" rel="noopener">
+            <div class="news-title">${title}</div>
             ${date ? `<div class="news-date">${date}</div>` : ''}
           </a>`;
         }).join('');

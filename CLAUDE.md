@@ -21,18 +21,18 @@ A personal daily dashboard webpage with a dark, modern design. Contains:
 
 - **Date** — shows today's full date and day of the week
 - **Weather · Oslo** — live current conditions fetched from Open-Meteo (free, no API key needed): temperature, feels like, humidity, wind speed, and a weather emoji. Uses Oslo coordinates (lat 59.9139, lon 10.7522).
-- **Latest News · VG.no** — fetches VG's RSS feed via allorigins.win proxy (needed to avoid browser CORS restrictions) and displays the 3 most recent headlines as clickable links with publish times.
+- **Latest News · NRK** — fetches NRK's RSS feed directly in the browser (NRK sends Access-Control-Allow-Origin: * so no proxy needed) and displays the 3 most recent headlines as clickable links with publish times.
 - **To-Do List** — add tasks by typing and pressing Enter or clicking +, check off completed items, remove with ✕
 - **Motivational Quote** — randomly selected from a built-in list of 8 quotes, with a "New quote" button to cycle through them
 
-The dashboard is served via a local Python server (server.py) launched by double-clicking launch.command. This is required because Safari blocks external API calls from local files — serving from http://localhost fixes that.
+The dashboard is a single self-contained HTML file — no server needed. It can be deployed directly to Netlify (or any static host) by uploading dashboard.html.
 
-### How to run
-Double-click launch.command. It starts server.py on port 8080 and opens the dashboard in the browser. Press Ctrl+C in the Terminal to stop.
+### How to run locally
+Double-click launch.command. It starts server.py on port 8080 and opens the dashboard in the browser. Press Ctrl+C in the Terminal to stop. (server.py is only needed when opening from a local file:// URL in Safari — not required when hosted online.)
 
 ### Files
-- dashboard.html — the full dashboard UI
-- server.py — tiny Python server: serves static files + fetches NRK RSS server-side at /api/news
+- dashboard.html — the full dashboard UI, works as a standalone file online
+- server.py — local Python server for running on your Mac without deploying
 - launch.command — double-clickable macOS launcher
 
 ### cookbook.html
