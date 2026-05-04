@@ -25,15 +25,18 @@ A personal daily dashboard webpage with a dark, modern design. Contains:
 - **To-Do List** — add tasks by typing and pressing Enter or clicking +, check off completed items, remove with ✕
 - **Motivational Quote** — randomly selected from a built-in list of 8 quotes, with a "New quote" button to cycle through them
 
-The dashboard is a single self-contained HTML file — no server needed. It can be deployed directly to Netlify (or any static host) by uploading dashboard.html.
+The dashboard is a single self-contained HTML file deployed on Netlify.
 
-### How to run locally
-Double-click launch.command. It starts server.py on port 8080 and opens the dashboard in the browser. Press Ctrl+C in the Terminal to stop. (server.py is only needed when opening from a local file:// URL in Safari — not required when hosted online.)
+### Live URL
+**https://haakonsdashboard.netlify.app** — this is the primary way to use the dashboard. No local server needed for daily use.
+
+### Running locally (optional)
+Double-click launch.command to start server.py on port 8080 and open the dashboard in the browser. Only needed if you want to run it on your Mac without internet access. Press Ctrl+C in Terminal to stop.
 
 ### Files
-- dashboard.html — the full dashboard UI, works as a standalone file online
-- server.py — local Python server for running on your Mac without deploying
-- launch.command — double-clickable macOS launcher
+- dashboard.html — the full dashboard UI, deployed to Netlify
+- server.py — local Python server (for offline/local use only)
+- launch.command — double-clickable macOS launcher (for offline/local use only)
 
 ### cookbook.html
 A personal cookbook app in the same warm 60s/70s brown theme as the dashboard. Features:
