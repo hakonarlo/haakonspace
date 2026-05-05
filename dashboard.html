@@ -38,21 +38,33 @@
     .nav-links { display: flex; gap: 4px; }
 
     .nav-link {
-      font-size: 0.78rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
+      font-size: 0.8rem;
+      letter-spacing: 0.04em;
       color: #C9A06A;
       text-decoration: none;
-      padding: 7px 14px;
+      padding: 7px 11px;
       border-radius: 8px;
       cursor: pointer;
       background: none;
       border: none;
       font-family: inherit;
+      display: flex;
+      align-items: center;
+      gap: 5px;
       transition: color 0.2s, background 0.2s;
+      white-space: nowrap;
     }
     .nav-link:hover { color: #EFE0B8; background: rgba(255,255,255,0.08); }
     .nav-link.active { color: #EFE0B8; background: #C4622D; }
+    .nav-icon { font-size: 1rem; line-height: 1; }
+    .nav-label { font-size: 0.75rem; letter-spacing: 0.06em; }
+
+    @media (max-width: 480px) {
+      .nav-brand { display: none; }
+      .nav-label { display: none; }
+      .nav-link { padding: 8px 12px; }
+      .nav-icon { font-size: 1.15rem; }
+    }
 
     /* ── Views ── */
     .view { display: none; }
@@ -789,9 +801,9 @@
   <nav class="app-nav">
     <div class="nav-brand">Håkon's Space</div>
     <div class="nav-links">
-      <button class="nav-link active" data-view="dashboard" onclick="switchView('dashboard')">Dashboard</button>
-      <button class="nav-link" data-view="cookbook" onclick="switchView('cookbook')">Cookbook</button>
-      <button class="nav-link" data-view="workout" onclick="switchView('workout')">Workouts</button>
+      <button class="nav-link active" data-view="dashboard" onclick="switchView('dashboard')"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></button>
+      <button class="nav-link" data-view="cookbook" onclick="switchView('cookbook')"><span class="nav-icon">🍳</span><span class="nav-label">Cookbook</span></button>
+      <button class="nav-link" data-view="workout" onclick="switchView('workout')"><span class="nav-icon">💪</span><span class="nav-label">Workouts</span></button>
     </div>
   </nav>
 
