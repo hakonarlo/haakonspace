@@ -798,9 +798,65 @@
     .run-stat-value { font-size: 1.1rem; font-weight: 600; color: #3B2508; }
     .run-notes { margin-top: 12px; font-size: 0.85rem; color: #8A6040; font-style: italic; }
 
-    .workout-controls {
+    /* Workout hero */
+    .wk-hero {
       max-width: 860px;
-      margin: 0 auto 24px;
+      margin: 0 auto 32px;
+      background: #FBF4E2;
+      border: 1px solid #C9A06A;
+      border-left: 4px solid #C4622D;
+      border-radius: 16px;
+      padding: 28px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .wk-hero-stats {
+      margin-top: 8px;
+      font-size: 0.85rem;
+      color: #9A6E3A;
+      line-height: 1.6;
+    }
+    .btn-log-workout {
+      background: #C4622D;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 28px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.2s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .btn-log-workout:hover { background: #A34E22; }
+
+    .wk-section-label {
+      max-width: 860px;
+      margin: 0 auto 16px;
+      font-size: 0.72rem;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: #9A6E3A;
+    }
+
+    /* Session card refinements */
+    .session-card-date {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #3B2508;
+      margin-bottom: 8px;
+    }
+    .session-summary {
+      font-size: 0.85rem;
+      color: #8A6040;
+      margin: 10px 0 14px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #E8D4A8;
     }
   </style>
 </head>
@@ -948,21 +1004,17 @@
   ══════════════════════════════════════ -->
   <div id="view-workout" class="view">
 
-    <div class="page-header">
-      <div class="page-title">Workout Tracker</div>
-      <button class="btn-primary" onclick="openWorkoutModal()">+ Log Workout</button>
-    </div>
-
-    <!-- Filter tabs -->
-    <div class="workout-controls">
-      <div class="filter-tabs" id="workout-filter-tabs">
-        <button class="filter-tab active" data-wtype="all"     onclick="setWorkoutFilter('all')">All</button>
-        <button class="filter-tab"        data-wtype="lifting" onclick="setWorkoutFilter('lifting')">Lifting</button>
-        <button class="filter-tab"        data-wtype="running" onclick="setWorkoutFilter('running')">Running</button>
+    <!-- Hero -->
+    <div class="wk-hero">
+      <div>
+        <div class="page-title">Workout Tracker</div>
+        <div class="wk-hero-stats" id="wk-hero-stats">Start logging to build your history.</div>
       </div>
+      <button class="btn-log-workout" onclick="openWorkoutModal()">+ Log new workout</button>
     </div>
 
-    <!-- Session history -->
+    <!-- Previous Workouts -->
+    <div class="wk-section-label">Previous Workouts</div>
     <div class="session-list" id="session-list"></div>
 
     <!-- Log Workout Modal -->
@@ -1621,46 +1673,60 @@
       localStorage.setItem('workout_sessions', JSON.stringify(workouts));
     }
 
-    function setWorkoutFilter(type) {
-      activeWorkoutFilter = type;
-      document.querySelectorAll('#workout-filter-tabs .filter-tab').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.wtype === type);
+    function renderWorkoutHero() {
+      const el = document.getElementById('wk-hero-stats');
+      if (!workouts.length) {
+        el.textContent = 'Start logging to build your history.';
+        return;
+      }
+      const total = workouts.length;
+      const last  = workouts[0];
+      const lastDate = new Date(last.date + 'T12:00:00').toLocaleDateString('en-GB', {
+        day: 'numeric', month: 'short', year: 'numeric'
       });
-      renderSessions();
+      const lifts = workouts.filter(w => w.type === 'lifting').length;
+      const runs  = workouts.filter(w => w.type === 'running').length;
+      el.innerHTML =
+        `${total} workout${total !== 1 ? 's' : ''} logged &nbsp;·&nbsp; Last session: ${lastDate}<br>` +
+        `${lifts} lifting &nbsp;·&nbsp; ${runs} running`;
     }
 
     function renderSessions() {
+      renderWorkoutHero();
       const list = document.getElementById('session-list');
-      const filtered = workouts.filter(w => activeWorkoutFilter === 'all' || w.type === activeWorkoutFilter);
 
-      if (!filtered.length) {
-        const icon = activeWorkoutFilter === 'running' ? '🏃' : activeWorkoutFilter === 'lifting' ? '🏋️' : '💪';
+      if (!workouts.length) {
         list.innerHTML = `<div class="session-empty">
-          <div class="empty-icon">${icon}</div>
-          <p>No workouts logged yet.<br>Click <strong>+ Log Workout</strong> to get started!</p>
+          <div class="empty-icon">💪</div>
+          <p>No workouts logged yet.<br>Hit <strong>+ Log new workout</strong> to get started!</p>
         </div>`;
         return;
       }
 
-      list.innerHTML = filtered.map(w => {
+      list.innerHTML = workouts.map(w => {
         const dateStr = new Date(w.date + 'T12:00:00').toLocaleDateString('en-GB', {
           weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
         });
 
         if (w.type === 'lifting') {
-          const exRows = (w.exercises || []).map(e =>
+          const exercises = w.exercises || [];
+          const summary   = exercises.map(e => escHtml(e.name)).join(' · ') || 'No exercises recorded';
+          const exRows    = exercises.map(e =>
             `<tr>
               <td>${escHtml(e.name)}</td>
               <td>${e.sets} × ${e.reps}</td>
-              <td>${e.weight} kg</td>
+              <td>${e.weight > 0 ? e.weight + ' kg' : '—'}</td>
             </tr>`
           ).join('');
           return `<div class="session-card">
             <div class="session-card-header">
-              <span class="session-type-badge badge-lifting">🏋️ ${escHtml(w.name || 'Lifting')}</span>
+              <div>
+                <div class="session-card-date">${dateStr}</div>
+                <span class="session-type-badge badge-lifting">🏋️ ${escHtml(w.name || 'Lifting')}</span>
+              </div>
               <button class="session-delete-btn" onclick="deleteSession('${w.id}')" title="Delete">✕</button>
             </div>
-            <div class="session-date" style="margin-bottom:12px">${dateStr}</div>
+            <div class="session-summary">${summary}</div>
             <table class="exercise-table">
               <thead><tr><th>Exercise</th><th>Sets × Reps</th><th>Weight</th></tr></thead>
               <tbody>${exRows}</tbody>
@@ -1669,11 +1735,13 @@
         } else {
           return `<div class="session-card">
             <div class="session-card-header">
-              <span class="session-type-badge badge-running">🏃 ${escHtml(w.name || 'Run')}</span>
+              <div>
+                <div class="session-card-date">${dateStr}</div>
+                <span class="session-type-badge badge-running">🏃 ${escHtml(w.name || 'Run')}</span>
+              </div>
               <button class="session-delete-btn" onclick="deleteSession('${w.id}')" title="Delete">✕</button>
             </div>
-            <div class="session-date" style="margin-bottom:12px">${dateStr}</div>
-            <div class="run-stats">
+            <div class="run-stats" style="margin-top:12px">
               <div class="run-stat">
                 <span class="run-stat-label">Distance</span>
                 <span class="run-stat-value">${w.distance} km</span>
