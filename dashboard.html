@@ -610,6 +610,177 @@
       padding-top: 14px;
       border-top: 1px solid #E0C898;
     }
+
+    /* ══════════════════════════════════════
+       WORKOUT TRACKER STYLES
+    ══════════════════════════════════════ */
+
+    #view-workout.active { display: block; padding: 40px 24px 80px; }
+
+    /* Type toggle in modal */
+    .workout-type-toggle { display: flex; gap: 8px; margin-bottom: 24px; }
+    .wtype-btn {
+      flex: 1;
+      background: #EFE0B8;
+      border: 1px solid #C9A06A;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 0.88rem;
+      color: #8A6040;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    .wtype-btn:hover { border-color: #C4622D; color: #C4622D; }
+    .wtype-btn.active { background: #C4622D; border-color: #C4622D; color: #fff; }
+
+    /* Exercise rows */
+    .exercise-header, .exercise-row {
+      display: grid;
+      grid-template-columns: 1fr 56px 56px 76px 32px;
+      gap: 8px;
+      align-items: center;
+    }
+    .exercise-header { margin-bottom: 6px; }
+    .ex-col-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #9A6E3A;
+      text-align: center;
+    }
+    .ex-col-label:first-child { text-align: left; }
+    .exercise-row { margin-bottom: 8px; }
+    .exercise-row input {
+      width: 100%;
+      background: #EFE0B8;
+      border: 1px solid #C9A06A;
+      border-radius: 8px;
+      padding: 8px 10px;
+      color: #3B2508;
+      font-size: 0.88rem;
+      outline: none;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+    .exercise-row input:focus { border-color: #C4622D; }
+    .exercise-row input::placeholder { color: #C0956A; }
+    .exercise-row input[type="number"] { text-align: center; }
+    .remove-exercise-btn {
+      background: none;
+      border: none;
+      color: #C0956A;
+      cursor: pointer;
+      font-size: 0.95rem;
+      padding: 4px;
+      border-radius: 6px;
+      line-height: 1;
+      transition: color 0.2s;
+    }
+    .remove-exercise-btn:hover { color: #C0392B; }
+    .btn-add-exercise {
+      background: none;
+      border: 1px dashed #C9A06A;
+      border-radius: 10px;
+      padding: 9px;
+      width: 100%;
+      font-size: 0.85rem;
+      color: #9A6E3A;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+      margin-top: 4px;
+      margin-bottom: 20px;
+    }
+    .btn-add-exercise:hover { border-color: #C4622D; color: #C4622D; }
+
+    /* Running form */
+    .input-with-unit { display: flex; align-items: center; gap: 10px; }
+    .input-with-unit input { flex: 1; }
+    .input-unit { font-size: 0.82rem; color: #9A6E3A; white-space: nowrap; }
+    .pace-display {
+      background: #EFE0B8;
+      border: 1px solid #C9A06A;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #4A3010;
+    }
+
+    /* Session history */
+    .session-list {
+      max-width: 860px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .session-empty { text-align: center; padding: 60px 0; color: #C0956A; }
+    .session-empty .empty-icon { font-size: 3rem; margin-bottom: 16px; }
+    .session-empty p { font-size: 0.95rem; line-height: 1.6; }
+
+    .session-card {
+      background: #FBF4E2;
+      border: 1px solid #C9A06A;
+      border-radius: 16px;
+      padding: 20px 24px;
+    }
+    .session-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .session-type-badge {
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-radius: 20px;
+      padding: 3px 10px;
+    }
+    .badge-lifting { color: #C4622D; background: #F5E6CC; border: 1px solid #C9A06A; }
+    .badge-running { color: #5A7A3A; background: #EAF0DC; border: 1px solid #AABF88; }
+    .session-date { font-size: 0.82rem; color: #9A6E3A; }
+    .session-delete-btn {
+      margin-left: auto;
+      background: none;
+      border: none;
+      color: #C0956A;
+      cursor: pointer;
+      font-size: 0.9rem;
+      padding: 2px 6px;
+      border-radius: 6px;
+      transition: color 0.2s;
+    }
+    .session-delete-btn:hover { color: #C0392B; }
+
+    /* Lifting table */
+    .exercise-table { width: 100%; border-collapse: collapse; }
+    .exercise-table th {
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #9A6E3A;
+      text-align: left;
+      padding: 0 12px 8px 0;
+      border-bottom: 1px solid #C9A06A;
+    }
+    .exercise-table td { font-size: 0.9rem; color: #4A3010; padding: 8px 12px 0 0; }
+    .exercise-table td:not(:first-child) { color: #8A6040; }
+
+    /* Running stats */
+    .run-stats { display: flex; gap: 28px; flex-wrap: wrap; }
+    .run-stat { display: flex; flex-direction: column; gap: 3px; }
+    .run-stat-label { font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: #9A6E3A; }
+    .run-stat-value { font-size: 1.1rem; font-weight: 600; color: #3B2508; }
+    .run-notes { margin-top: 12px; font-size: 0.85rem; color: #8A6040; font-style: italic; }
+
+    .workout-controls {
+      max-width: 860px;
+      margin: 0 auto 24px;
+    }
   </style>
 </head>
 <body>
@@ -620,6 +791,7 @@
     <div class="nav-links">
       <button class="nav-link active" data-view="dashboard" onclick="switchView('dashboard')">Dashboard</button>
       <button class="nav-link" data-view="cookbook" onclick="switchView('cookbook')">Cookbook</button>
+      <button class="nav-link" data-view="workout" onclick="switchView('workout')">Workouts</button>
     </div>
   </nav>
 
@@ -750,6 +922,97 @@
 
   </div>
 
+  <!-- ══════════════════════════════════════
+       WORKOUT VIEW
+  ══════════════════════════════════════ -->
+  <div id="view-workout" class="view">
+
+    <div class="page-header">
+      <div class="page-title">Workout Tracker</div>
+      <button class="btn-primary" onclick="openWorkoutModal()">+ Log Workout</button>
+    </div>
+
+    <!-- Filter tabs -->
+    <div class="workout-controls">
+      <div class="filter-tabs" id="workout-filter-tabs">
+        <button class="filter-tab active" data-wtype="all"     onclick="setWorkoutFilter('all')">All</button>
+        <button class="filter-tab"        data-wtype="lifting" onclick="setWorkoutFilter('lifting')">Lifting</button>
+        <button class="filter-tab"        data-wtype="running" onclick="setWorkoutFilter('running')">Running</button>
+      </div>
+    </div>
+
+    <!-- Session history -->
+    <div class="session-list" id="session-list"></div>
+
+    <!-- Log Workout Modal -->
+    <div class="overlay" id="workout-overlay">
+      <div class="modal" style="max-width:600px">
+        <div class="modal-title">Log Workout</div>
+        <button class="close-btn" onclick="closeWorkoutModal()">✕</button>
+
+        <!-- Lifting / Running toggle -->
+        <div class="workout-type-toggle">
+          <button class="wtype-btn active" id="wtype-lifting" onclick="setWorkoutType('lifting')">🏋️ Lifting</button>
+          <button class="wtype-btn"        id="wtype-running" onclick="setWorkoutType('running')">🏃 Running</button>
+        </div>
+
+        <!-- Date -->
+        <div class="form-group">
+          <label for="w-date">Date</label>
+          <input type="date" id="w-date" />
+        </div>
+
+        <!-- Lifting section -->
+        <div id="lifting-form">
+          <div class="exercise-header">
+            <div class="ex-col-label">Exercise</div>
+            <div class="ex-col-label">Sets</div>
+            <div class="ex-col-label">Reps</div>
+            <div class="ex-col-label">kg</div>
+            <div></div>
+          </div>
+          <div id="exercise-rows"></div>
+          <button class="btn-add-exercise" onclick="addExerciseRow()">+ Add exercise</button>
+        </div>
+
+        <!-- Running section -->
+        <div id="running-form" style="display:none">
+          <div class="form-group">
+            <label>Distance</label>
+            <div class="input-with-unit">
+              <input type="number" id="w-distance" placeholder="0.0" step="0.01" min="0" oninput="calcPace()" />
+              <span class="input-unit">km</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Time</label>
+            <div class="input-with-unit">
+              <input type="text" id="w-time" placeholder="25:30" oninput="calcPace()" />
+              <span class="input-unit">mm:ss</span>
+            </div>
+            <div class="form-hint">Use mm:ss (e.g. 25:30) or h:mm:ss for longer runs</div>
+          </div>
+          <div class="form-group">
+            <label>Pace</label>
+            <div class="pace-display" id="pace-display">— min/km</div>
+          </div>
+          <div class="form-group">
+            <label for="w-notes">Notes (optional)</label>
+            <input type="text" id="w-notes" placeholder="e.g. Easy recovery run" />
+          </div>
+        </div>
+
+        <div class="field-error" id="err-workout" style="display:none;margin-bottom:12px"></div>
+
+        <div class="form-actions">
+          <button class="btn-secondary" onclick="closeWorkoutModal()">Cancel</button>
+          <button class="btn-primary" onclick="saveWorkout()">Save</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
   <script>
     // ── View switching ─────────────────────────────────────
     function switchView(name) {
@@ -757,7 +1020,8 @@
       document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
       document.getElementById('view-' + name).classList.add('active');
       document.querySelector('[data-view="' + name + '"]').classList.add('active');
-      document.title = name === 'dashboard' ? "Håkon's Dashboard" : "My Cookbook";
+      const titles = { dashboard: "Håkon's Dashboard", cookbook: "My Cookbook", workout: "Workout Tracker" };
+      document.title = titles[name] || "Håkon's Space";
     }
 
     // ── Date ──────────────────────────────────────────────
@@ -1319,6 +1583,213 @@
 
     renderRotd();
     renderRecipes();
+
+    // ══════════════════════════════════════
+    // WORKOUT TRACKER
+    // ══════════════════════════════════════
+
+    let workouts = loadWorkouts();
+    let activeWorkoutFilter = 'all';
+    let currentWorkoutType = 'lifting';
+
+    function loadWorkouts() {
+      try { return JSON.parse(localStorage.getItem('workout_sessions')) || []; }
+      catch { return []; }
+    }
+    function saveWorkouts() {
+      localStorage.setItem('workout_sessions', JSON.stringify(workouts));
+    }
+
+    function setWorkoutFilter(type) {
+      activeWorkoutFilter = type;
+      document.querySelectorAll('#workout-filter-tabs .filter-tab').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.wtype === type);
+      });
+      renderSessions();
+    }
+
+    function renderSessions() {
+      const list = document.getElementById('session-list');
+      const filtered = workouts.filter(w => activeWorkoutFilter === 'all' || w.type === activeWorkoutFilter);
+
+      if (!filtered.length) {
+        const icon = activeWorkoutFilter === 'running' ? '🏃' : activeWorkoutFilter === 'lifting' ? '🏋️' : '💪';
+        list.innerHTML = `<div class="session-empty">
+          <div class="empty-icon">${icon}</div>
+          <p>No workouts logged yet.<br>Click <strong>+ Log Workout</strong> to get started!</p>
+        </div>`;
+        return;
+      }
+
+      list.innerHTML = filtered.map(w => {
+        const dateStr = new Date(w.date + 'T12:00:00').toLocaleDateString('en-GB', {
+          weekday: 'short', day: 'numeric', month: 'short', year: 'numeric'
+        });
+
+        if (w.type === 'lifting') {
+          const rows = w.exercises.map(e =>
+            `<tr>
+              <td>${escHtml(e.name)}</td>
+              <td>${e.sets} × ${e.reps}</td>
+              <td>${e.weight} kg</td>
+            </tr>`
+          ).join('');
+          return `<div class="session-card">
+            <div class="session-card-header">
+              <span class="session-type-badge badge-lifting">Lifting</span>
+              <span class="session-date">${dateStr}</span>
+              <button class="session-delete-btn" onclick="deleteSession('${w.id}')" title="Delete">✕</button>
+            </div>
+            <table class="exercise-table">
+              <thead><tr><th>Exercise</th><th>Sets × Reps</th><th>Weight</th></tr></thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>`;
+        } else {
+          return `<div class="session-card">
+            <div class="session-card-header">
+              <span class="session-type-badge badge-running">Running</span>
+              <span class="session-date">${dateStr}</span>
+              <button class="session-delete-btn" onclick="deleteSession('${w.id}')" title="Delete">✕</button>
+            </div>
+            <div class="run-stats">
+              <div class="run-stat">
+                <span class="run-stat-label">Distance</span>
+                <span class="run-stat-value">${w.distance} km</span>
+              </div>
+              <div class="run-stat">
+                <span class="run-stat-label">Time</span>
+                <span class="run-stat-value">${w.time}</span>
+              </div>
+              <div class="run-stat">
+                <span class="run-stat-label">Pace</span>
+                <span class="run-stat-value">${w.pace} /km</span>
+              </div>
+            </div>
+            ${w.notes ? `<div class="run-notes">${escHtml(w.notes)}</div>` : ''}
+          </div>`;
+        }
+      }).join('');
+    }
+
+    function openWorkoutModal() {
+      document.getElementById('w-date').value = new Date().toISOString().split('T')[0];
+      document.getElementById('w-distance').value = '';
+      document.getElementById('w-time').value = '';
+      document.getElementById('w-notes').value = '';
+      document.getElementById('pace-display').textContent = '— min/km';
+      document.getElementById('err-workout').style.display = 'none';
+      document.getElementById('exercise-rows').innerHTML = '';
+      setWorkoutType('lifting');
+      addExerciseRow();
+      document.getElementById('workout-overlay').classList.add('open');
+    }
+
+    function closeWorkoutModal() {
+      document.getElementById('workout-overlay').classList.remove('open');
+    }
+
+    function setWorkoutType(type) {
+      currentWorkoutType = type;
+      document.getElementById('wtype-lifting').classList.toggle('active', type === 'lifting');
+      document.getElementById('wtype-running').classList.toggle('active', type === 'running');
+      document.getElementById('lifting-form').style.display = type === 'lifting' ? 'block' : 'none';
+      document.getElementById('running-form').style.display  = type === 'running'  ? 'block' : 'none';
+    }
+
+    function addExerciseRow() {
+      const row = document.createElement('div');
+      row.className = 'exercise-row';
+      row.innerHTML = `
+        <input type="text"   class="ex-name"   placeholder="e.g. Bench Press" />
+        <input type="number" class="ex-sets"   placeholder="3"  min="1" />
+        <input type="number" class="ex-reps"   placeholder="10" min="1" />
+        <input type="number" class="ex-weight" placeholder="80" min="0" step="0.5" />
+        <button class="remove-exercise-btn" onclick="this.closest('.exercise-row').remove()" title="Remove">✕</button>`;
+      document.getElementById('exercise-rows').appendChild(row);
+    }
+
+    function calcPace() {
+      const dist    = parseFloat(document.getElementById('w-distance').value);
+      const timeStr = document.getElementById('w-time').value.trim();
+      const display = document.getElementById('pace-display');
+      if (!dist || !timeStr) { display.textContent = '— min/km'; return; }
+
+      const parts = timeStr.split(':').map(Number);
+      let secs;
+      if (parts.length === 2)      secs = parts[0] * 60 + parts[1];
+      else if (parts.length === 3) secs = parts[0] * 3600 + parts[1] * 60 + parts[2];
+      else { display.textContent = '— min/km'; return; }
+
+      if (!secs || isNaN(secs) || dist <= 0) { display.textContent = '— min/km'; return; }
+
+      const paceSecs = secs / dist;
+      const m = Math.floor(paceSecs / 60);
+      const s = Math.round(paceSecs % 60).toString().padStart(2, '0');
+      display.textContent = `${m}:${s} min/km`;
+    }
+
+    function saveWorkout() {
+      const date  = document.getElementById('w-date').value;
+      const errEl = document.getElementById('err-workout');
+      errEl.style.display = 'none';
+
+      if (!date) { errEl.textContent = 'Please select a date.'; errEl.style.display = 'block'; return; }
+
+      if (currentWorkoutType === 'lifting') {
+        const rows = document.querySelectorAll('#exercise-rows .exercise-row');
+        if (!rows.length) {
+          errEl.textContent = 'Add at least one exercise.';
+          errEl.style.display = 'block';
+          return;
+        }
+        const exercises = [];
+        for (const row of rows) {
+          const name   = row.querySelector('.ex-name').value.trim();
+          const sets   = parseInt(row.querySelector('.ex-sets').value)   || 0;
+          const reps   = parseInt(row.querySelector('.ex-reps').value)   || 0;
+          const weight = parseFloat(row.querySelector('.ex-weight').value) || 0;
+          if (!name) {
+            errEl.textContent = 'Please fill in all exercise names.';
+            errEl.style.display = 'block';
+            return;
+          }
+          exercises.push({ name, sets, reps, weight });
+        }
+        workouts.unshift({ id: Date.now().toString(), type: 'lifting', date, exercises });
+
+      } else {
+        const distance = parseFloat(document.getElementById('w-distance').value);
+        const time     = document.getElementById('w-time').value.trim();
+        const notes    = document.getElementById('w-notes').value.trim();
+        const paceText = document.getElementById('pace-display').textContent;
+        if (!distance || distance <= 0) {
+          errEl.textContent = 'Please enter a distance.'; errEl.style.display = 'block'; return;
+        }
+        if (!time) {
+          errEl.textContent = 'Please enter a time.'; errEl.style.display = 'block'; return;
+        }
+        const pace = paceText.replace(' min/km', '');
+        workouts.unshift({ id: Date.now().toString(), type: 'running', date, distance, time, pace, notes });
+      }
+
+      saveWorkouts();
+      closeWorkoutModal();
+      renderSessions();
+    }
+
+    function deleteSession(id) {
+      if (!confirm('Delete this workout?')) return;
+      workouts = workouts.filter(w => w.id !== id);
+      saveWorkouts();
+      renderSessions();
+    }
+
+    document.getElementById('workout-overlay').addEventListener('click', function(e) {
+      if (e.target === this) closeWorkoutModal();
+    });
+
+    renderSessions();
   </script>
 </body>
 </html>
