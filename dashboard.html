@@ -647,46 +647,55 @@
     .wtype-btn.active { background: #C4622D; border-color: #C4622D; color: #fff; }
 
     /* Exercise rows */
-    .exercise-header, .exercise-row {
-      display: grid;
-      grid-template-columns: 1fr 56px 56px 76px 32px;
+    .exercise-row {
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #E8D4A8;
+    }
+    .exercise-row:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+    .exercise-row-name {
+      display: flex;
       gap: 8px;
       align-items: center;
+      margin-bottom: 8px;
     }
-    .exercise-header { margin-bottom: 6px; }
-    .ex-col-label {
+    .exercise-row-name input { flex: 1; min-width: 0; }
+    .exercise-row-nums { display: flex; gap: 8px; }
+    .ex-num-label {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
       font-size: 0.65rem;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: #9A6E3A;
-      text-align: center;
     }
-    .ex-col-label:first-child { text-align: left; }
-    .exercise-row { margin-bottom: 8px; }
-    .exercise-row input {
-      width: 100%;
+    .ex-num-label input { width: 100%; text-align: center; }
+    .exercise-row input[type="text"],
+    .exercise-row input[type="number"] {
       background: #EFE0B8;
       border: 1px solid #C9A06A;
       border-radius: 8px;
       padding: 8px 10px;
       color: #3B2508;
-      font-size: 0.88rem;
+      font-size: 0.9rem;
       outline: none;
       font-family: inherit;
       transition: border-color 0.2s;
     }
     .exercise-row input:focus { border-color: #C4622D; }
     .exercise-row input::placeholder { color: #C0956A; }
-    .exercise-row input[type="number"] { text-align: center; }
     .remove-exercise-btn {
       background: none;
       border: none;
       color: #C0956A;
       cursor: pointer;
       font-size: 0.95rem;
-      padding: 4px;
+      padding: 4px 6px;
       border-radius: 6px;
       line-height: 1;
+      flex-shrink: 0;
       transition: color 0.2s;
     }
     .remove-exercise-btn:hover { color: #C0392B; }
@@ -976,13 +985,6 @@
 
         <!-- Lifting section -->
         <div id="lifting-form">
-          <div class="exercise-header">
-            <div class="ex-col-label">Exercise</div>
-            <div class="ex-col-label">Sets</div>
-            <div class="ex-col-label">Reps</div>
-            <div class="ex-col-label">kg</div>
-            <div></div>
-          </div>
           <div id="exercise-rows"></div>
           <button class="btn-add-exercise" onclick="addExerciseRow()">+ Add exercise</button>
         </div>
@@ -1713,11 +1715,15 @@
       const row = document.createElement('div');
       row.className = 'exercise-row';
       row.innerHTML = `
-        <input type="text"   class="ex-name"   placeholder="e.g. Bench Press" />
-        <input type="number" class="ex-sets"   placeholder="3"  min="1" />
-        <input type="number" class="ex-reps"   placeholder="10" min="1" />
-        <input type="number" class="ex-weight" placeholder="80" min="0" step="0.5" />
-        <button class="remove-exercise-btn" onclick="this.closest('.exercise-row').remove()" title="Remove">✕</button>`;
+        <div class="exercise-row-name">
+          <input type="text" class="ex-name" placeholder="Exercise name, e.g. Bench Press" />
+          <button class="remove-exercise-btn" onclick="this.closest('.exercise-row').remove()" title="Remove">✕</button>
+        </div>
+        <div class="exercise-row-nums">
+          <label class="ex-num-label">Sets<input type="number" class="ex-sets" placeholder="3" min="1" /></label>
+          <label class="ex-num-label">Reps<input type="number" class="ex-reps" placeholder="10" min="1" /></label>
+          <label class="ex-num-label">kg<input type="number" class="ex-weight" placeholder="80" min="0" step="0.5" /></label>
+        </div>`;
       document.getElementById('exercise-rows').appendChild(row);
     }
 
