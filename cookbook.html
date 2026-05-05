@@ -12,7 +12,55 @@
       color: #3B2508;
       font-family: 'Segoe UI', system-ui, sans-serif;
       min-height: 100vh;
-      padding: 48px 24px 80px;
+      padding: 0 24px 80px;
+    }
+
+    /* ── Navigation ── */
+    .app-nav {
+      background: #3B2508;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      height: 56px;
+      margin: 0 -24px 40px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .nav-brand {
+      font-size: 0.8rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #EFE0B8;
+      font-weight: 500;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 4px;
+    }
+
+    .nav-link {
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #C9A06A;
+      text-decoration: none;
+      padding: 7px 14px;
+      border-radius: 8px;
+      transition: color 0.2s, background 0.2s;
+    }
+
+    .nav-link:hover {
+      color: #EFE0B8;
+      background: rgba(255,255,255,0.08);
+    }
+
+    .nav-link.active {
+      color: #EFE0B8;
+      background: #C4622D;
     }
 
     /* ── Header ── */
@@ -549,6 +597,10 @@
     }
   </style>
 </head>
+<script>
+    // Cookbook is now part of dashboard.html — redirect there
+    window.location.replace('dashboard.html');
+  </script>
 <body>
 
   <!-- Header -->
