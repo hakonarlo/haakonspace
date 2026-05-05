@@ -977,7 +977,7 @@
           <button class="wtype-btn"        id="wtype-running" onclick="setWorkoutType('running')">🏃 Running</button>
         </div>
 
-        <!-- Date -->
+        <!-- Date — always visible -->
         <div class="form-group">
           <label for="w-date">Date</label>
           <input type="date" id="w-date" />
@@ -985,12 +985,23 @@
 
         <!-- Lifting section -->
         <div id="lifting-form">
+          <div class="form-group">
+            <label for="w-lifting-name">Session type</label>
+            <select id="w-lifting-name">
+              <option value="Upper Body">Upper Body</option>
+              <option value="Lower Body">Lower Body</option>
+            </select>
+          </div>
           <div id="exercise-rows"></div>
           <button class="btn-add-exercise" onclick="addExerciseRow()">+ Add exercise</button>
         </div>
 
         <!-- Running section -->
         <div id="running-form" style="display:none">
+          <div class="form-group">
+            <label for="w-running-name">Run name</label>
+            <input type="text" id="w-running-name" placeholder="e.g. Morning run, Trail 5K" />
+          </div>
           <div class="form-group">
             <label>Distance</label>
             <div class="input-with-unit">
@@ -1004,23 +1015,19 @@
               <input type="text" id="w-time" placeholder="25:30" oninput="calcPace()" />
               <span class="input-unit">mm:ss</span>
             </div>
-            <div class="form-hint">Use mm:ss (e.g. 25:30) or h:mm:ss for longer runs</div>
+            <div class="form-hint">Format: 25:30 for 25 min 30 sec, or 1:05:00 for 1 hour 5 min</div>
           </div>
           <div class="form-group">
             <label>Pace</label>
             <div class="pace-display" id="pace-display">— min/km</div>
           </div>
-          <div class="form-group">
-            <label for="w-notes">Notes (optional)</label>
-            <input type="text" id="w-notes" placeholder="e.g. Easy recovery run" />
-          </div>
         </div>
 
-        <div class="field-error" id="err-workout" style="display:none;margin-bottom:12px"></div>
+        <div id="err-workout" style="display:none;font-size:0.82rem;color:#C0392B;margin-bottom:12px;padding:8px 12px;background:#FBE8E4;border-radius:8px;border:1px solid #E8C0B8"></div>
 
         <div class="form-actions">
           <button class="btn-secondary" onclick="closeWorkoutModal()">Cancel</button>
-          <button class="btn-primary" onclick="saveWorkout()">Save</button>
+          <button class="btn-primary" onclick="saveWorkout()">Save workout</button>
         </div>
       </div>
     </div>
@@ -1637,11 +1644,11 @@
 
       list.innerHTML = filtered.map(w => {
         const dateStr = new Date(w.date + 'T12:00:00').toLocaleDateString('en-GB', {
-          weekday: 'short', day: 'numeric', month: 'short', year: 'numeric'
+          weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
         });
 
         if (w.type === 'lifting') {
-          const rows = w.exercises.map(e =>
+          const exRows = (w.exercises || []).map(e =>
             `<tr>
               <td>${escHtml(e.name)}</td>
               <td>${e.sets} × ${e.reps}</td>
@@ -1650,22 +1657,22 @@
           ).join('');
           return `<div class="session-card">
             <div class="session-card-header">
-              <span class="session-type-badge badge-lifting">Lifting</span>
-              <span class="session-date">${dateStr}</span>
+              <span class="session-type-badge badge-lifting">🏋️ ${escHtml(w.name || 'Lifting')}</span>
               <button class="session-delete-btn" onclick="deleteSession('${w.id}')" title="Delete">✕</button>
             </div>
+            <div class="session-date" style="margin-bottom:12px">${dateStr}</div>
             <table class="exercise-table">
               <thead><tr><th>Exercise</th><th>Sets × Reps</th><th>Weight</th></tr></thead>
-              <tbody>${rows}</tbody>
+              <tbody>${exRows}</tbody>
             </table>
           </div>`;
         } else {
           return `<div class="session-card">
             <div class="session-card-header">
-              <span class="session-type-badge badge-running">Running</span>
-              <span class="session-date">${dateStr}</span>
+              <span class="session-type-badge badge-running">🏃 ${escHtml(w.name || 'Run')}</span>
               <button class="session-delete-btn" onclick="deleteSession('${w.id}')" title="Delete">✕</button>
             </div>
+            <div class="session-date" style="margin-bottom:12px">${dateStr}</div>
             <div class="run-stats">
               <div class="run-stat">
                 <span class="run-stat-label">Distance</span>
@@ -1680,20 +1687,32 @@
                 <span class="run-stat-value">${w.pace} /km</span>
               </div>
             </div>
-            ${w.notes ? `<div class="run-notes">${escHtml(w.notes)}</div>` : ''}
           </div>`;
         }
       }).join('');
     }
 
+    function showWorkoutError(msg) {
+      const el = document.getElementById('err-workout');
+      el.textContent = msg;
+      el.style.display = 'block';
+    }
+
+    function hideWorkoutError() {
+      const el = document.getElementById('err-workout');
+      el.textContent = '';
+      el.style.display = 'none';
+    }
+
     function openWorkoutModal() {
       document.getElementById('w-date').value = new Date().toISOString().split('T')[0];
+      document.getElementById('w-lifting-name').value = 'Upper Body';
+      document.getElementById('w-running-name').value = '';
       document.getElementById('w-distance').value = '';
       document.getElementById('w-time').value = '';
-      document.getElementById('w-notes').value = '';
       document.getElementById('pace-display').textContent = '— min/km';
-      document.getElementById('err-workout').style.display = 'none';
       document.getElementById('exercise-rows').innerHTML = '';
+      hideWorkoutError();
       setWorkoutType('lifting');
       addExerciseRow();
       document.getElementById('workout-overlay').classList.add('open');
@@ -1709,6 +1728,7 @@
       document.getElementById('wtype-running').classList.toggle('active', type === 'running');
       document.getElementById('lifting-form').style.display = type === 'lifting' ? 'block' : 'none';
       document.getElementById('running-form').style.display  = type === 'running'  ? 'block' : 'none';
+      hideWorkoutError();
     }
 
     function addExerciseRow() {
@@ -1748,47 +1768,39 @@
     }
 
     function saveWorkout() {
-      const date  = document.getElementById('w-date').value;
-      const errEl = document.getElementById('err-workout');
-      errEl.style.display = 'none';
+      hideWorkoutError();
 
-      if (!date) { errEl.textContent = 'Please select a date.'; errEl.style.display = 'block'; return; }
+      const date = document.getElementById('w-date').value;
+      if (!date) { showWorkoutError('Please select a date.'); return; }
 
       if (currentWorkoutType === 'lifting') {
+        const name = document.getElementById('w-lifting-name').value;
         const rows = document.querySelectorAll('#exercise-rows .exercise-row');
-        if (!rows.length) {
-          errEl.textContent = 'Add at least one exercise.';
-          errEl.style.display = 'block';
-          return;
-        }
+        if (!rows.length) { showWorkoutError('Add at least one exercise.'); return; }
+
         const exercises = [];
         for (const row of rows) {
-          const name   = row.querySelector('.ex-name').value.trim();
-          const sets   = parseInt(row.querySelector('.ex-sets').value)   || 0;
-          const reps   = parseInt(row.querySelector('.ex-reps').value)   || 0;
-          const weight = parseFloat(row.querySelector('.ex-weight').value) || 0;
-          if (!name) {
-            errEl.textContent = 'Please fill in all exercise names.';
-            errEl.style.display = 'block';
-            return;
-          }
-          exercises.push({ name, sets, reps, weight });
+          const exName = row.querySelector('.ex-name').value.trim();
+          if (!exName) { showWorkoutError('Please fill in all exercise names.'); return; }
+          exercises.push({
+            name:   exName,
+            sets:   parseInt(row.querySelector('.ex-sets').value)    || 0,
+            reps:   parseInt(row.querySelector('.ex-reps').value)    || 0,
+            weight: parseFloat(row.querySelector('.ex-weight').value) || 0
+          });
         }
-        workouts.unshift({ id: Date.now().toString(), type: 'lifting', date, exercises });
+        workouts.unshift({ id: Date.now().toString(), type: 'lifting', date, name, exercises });
 
       } else {
+        const name     = document.getElementById('w-running-name').value.trim() || 'Run';
         const distance = parseFloat(document.getElementById('w-distance').value);
         const time     = document.getElementById('w-time').value.trim();
-        const notes    = document.getElementById('w-notes').value.trim();
-        const paceText = document.getElementById('pace-display').textContent;
-        if (!distance || distance <= 0) {
-          errEl.textContent = 'Please enter a distance.'; errEl.style.display = 'block'; return;
-        }
-        if (!time) {
-          errEl.textContent = 'Please enter a time.'; errEl.style.display = 'block'; return;
-        }
-        const pace = paceText.replace(' min/km', '');
-        workouts.unshift({ id: Date.now().toString(), type: 'running', date, distance, time, pace, notes });
+        const pace     = document.getElementById('pace-display').textContent.replace(' min/km', '');
+
+        if (!distance || distance <= 0) { showWorkoutError('Please enter a distance.'); return; }
+        if (!time)                       { showWorkoutError('Please enter a time.');     return; }
+
+        workouts.unshift({ id: Date.now().toString(), type: 'running', date, name, distance, time, pace });
       }
 
       saveWorkouts();
