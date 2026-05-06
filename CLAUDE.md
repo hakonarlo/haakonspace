@@ -17,7 +17,7 @@
 ## What We've Built
 
 ### dashboard.html
-A personal daily dashboard webpage with a dark, modern design. Contains:
+A unified single-page app deployed on Netlify with three sections (Home, Cookbook, Workouts). The Home section contains:
 
 - **Date** — shows today's full date and day of the week
 - **Weather · Oslo** — live current conditions fetched from Open-Meteo (free, no API key needed): temperature, feels like, humidity, wind speed, and a weather emoji. Uses Oslo coordinates (lat 59.9139, lon 10.7522).
@@ -25,7 +25,14 @@ A personal daily dashboard webpage with a dark, modern design. Contains:
 - **To-Do List** — add tasks by typing and pressing Enter or clicking +, check off completed items, remove with ✕
 - **Motivational Quote** — randomly selected from a built-in list of 8 quotes, with a "New quote" button to cycle through them
 
-The dashboard is a single self-contained HTML file deployed on Netlify.
+### Workout Tracker (inside dashboard.html)
+A lifting and running log accessible from the Workouts tab. Features:
+
+- **Log new workout** — modal form for either a lifting session (exercises with sets/reps/weight) or a run (distance, time, auto-calculated pace)
+- **Session history** — all past workouts shown as cards with date, type badge, and full exercise details
+- **Permanent storage via Supabase** — workouts are saved to a real database (not localStorage), so data persists across devices and browser clears
+- **Supabase project:** https://mkqslgtjbshsmsdhoovg.supabase.co — table: `workouts`
+- **Delete** — remove any session with the ✕ button
 
 ### Live URL
 **https://haakonsdashboard.netlify.app** — this is the primary way to use the dashboard. No local server needed for daily use.
