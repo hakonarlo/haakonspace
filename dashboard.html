@@ -1661,16 +1661,41 @@
     // WORKOUT TRACKER
     // ══════════════════════════════════════
 
-    let workouts = loadWorkouts();
-    let activeWorkoutFilter = 'all';
+    const SB_URL = 'https://mkqslgtjbshsmsdhoovg.supabase.co';
+    const SB_KEY = 'sb_publishable_hfN6VsnjGPq0jBCAR-pIGQ_Nge2C7EZ';
+    const SB_HEADERS = {
+      'apikey': SB_KEY,
+      'Authorization': `Bearer ${SB_KEY}`,
+      'Content-Type': 'application/json'
+    };
+
+    let workouts = [];
     let currentWorkoutType = 'lifting';
 
-    function loadWorkouts() {
-      try { return JSON.parse(localStorage.getItem('workout_sessions')) || []; }
-      catch { return []; }
-    }
-    function saveWorkouts() {
-      localStorage.setItem('workout_sessions', JSON.stringify(workouts));
+    async function fetchWorkouts() {
+      const list = document.getElementById('session-list');
+      list.innerHTML = `<div class="session-empty"><div class="empty-icon">⏳</div><p>Loading workouts…</p></div>`;
+      try {
+        const res = await fetch(
+          `${SB_URL}/rest/v1/workouts?select=*&order=date.desc,created_at.desc`,
+          { headers: SB_HEADERS }
+        );
+        if (!res.ok) throw new Error('Load failed');
+        const data = await res.json();
+        workouts = data.map(w => ({
+          id:        w.id,
+          type:      w.type,
+          date:      w.date,
+          name:      w.name,
+          exercises: w.exercises || [],
+          distance:  w.distance,
+          time:      w.run_time,
+          pace:      w.pace
+        }));
+        renderSessions();
+      } catch (e) {
+        list.innerHTML = `<div class="session-empty"><div class="empty-icon">⚠️</div><p>Could not load workouts.<br>Check your connection and try refreshing.</p></div>`;
+      }
     }
 
     function renderWorkoutHero() {
@@ -1835,11 +1860,13 @@
       display.textContent = `${m}:${s} min/km`;
     }
 
-    function saveWorkout() {
+    async function saveWorkout() {
       hideWorkoutError();
 
       const date = document.getElementById('w-date').value;
       if (!date) { showWorkoutError('Please select a date.'); return; }
+
+      let newWorkout;
 
       if (currentWorkoutType === 'lifting') {
         const name = document.getElementById('w-lifting-name').value;
@@ -1857,7 +1884,7 @@
             weight: parseFloat(row.querySelector('.ex-weight').value) || 0
           });
         }
-        workouts.unshift({ id: Date.now().toString(), type: 'lifting', date, name, exercises });
+        newWorkout = { id: Date.now().toString(), type: 'lifting', date, name, exercises };
 
       } else {
         const name     = document.getElementById('w-running-name').value.trim() || 'Run';
@@ -1868,26 +1895,63 @@
         if (!distance || distance <= 0) { showWorkoutError('Please enter a distance.'); return; }
         if (!time)                       { showWorkoutError('Please enter a time.');     return; }
 
-        workouts.unshift({ id: Date.now().toString(), type: 'running', date, name, distance, time, pace });
+        newWorkout = { id: Date.now().toString(), type: 'running', date, name, distance, time, pace };
       }
 
-      saveWorkouts();
+      // Update UI immediately so it feels instant
+      workouts.unshift(newWorkout);
       closeWorkoutModal();
       renderSessions();
+
+      // Send to Supabase
+      try {
+        const body = { ...newWorkout };
+        if (newWorkout.type === 'running') {
+          body.run_time = newWorkout.time;
+          delete body.time;
+        }
+        const res = await fetch(`${SB_URL}/rest/v1/workouts`, {
+          method: 'POST',
+          headers: { ...SB_HEADERS, 'Prefer': 'return=minimal' },
+          body: JSON.stringify(body)
+        });
+        if (!res.ok) throw new Error('Save failed');
+      } catch (e) {
+        // Revert the optimistic update if Supabase rejected it
+        workouts = workouts.filter(w => w.id !== newWorkout.id);
+        renderSessions();
+        alert('Could not save workout — please check your connection and try again.');
+      }
     }
 
-    function deleteSession(id) {
+    async function deleteSession(id) {
       if (!confirm('Delete this workout?')) return;
+
+      // Update UI immediately
+      const removed = workouts.find(w => w.id === id);
       workouts = workouts.filter(w => w.id !== id);
-      saveWorkouts();
       renderSessions();
+
+      try {
+        const res = await fetch(`${SB_URL}/rest/v1/workouts?id=eq.${encodeURIComponent(id)}`, {
+          method: 'DELETE',
+          headers: SB_HEADERS
+        });
+        if (!res.ok) throw new Error('Delete failed');
+      } catch (e) {
+        // Revert if delete failed
+        workouts.push(removed);
+        workouts.sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+        renderSessions();
+        alert('Could not delete workout — please check your connection and try again.');
+      }
     }
 
     document.getElementById('workout-overlay').addEventListener('click', function(e) {
       if (e.target === this) closeWorkoutModal();
     });
 
-    renderSessions();
+    fetchWorkouts();
   </script>
 </body>
 </html>
