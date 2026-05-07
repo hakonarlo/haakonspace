@@ -37,6 +37,11 @@ A lifting and running log accessible from the Workouts tab. Features:
 ### Live URL
 **https://haakonsdashboard.netlify.app** — this is the primary way to use the dashboard. No local server needed for daily use.
 
+### Deployment
+- **GitHub repository:** https://github.com/hakonarlo/haakonspace — all code lives here
+- **Automatic deploys:** Netlify is connected to GitHub. When code is pushed to the `main` branch, the live site updates automatically. No manual drag-and-drop needed.
+- **To deploy changes:** make edits, then push to GitHub with `git push github main`
+
 ### Running locally (optional)
 Double-click launch.command to start server.py on port 8080 and open the dashboard in the browser. Only needed if you want to run it on your Mac without internet access. Press Ctrl+C in Terminal to stop.
 
